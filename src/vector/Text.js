@@ -1013,7 +1013,32 @@ acgraph.vector.Text.prototype.mergeStyles_ = function(var_args) {
       if (s) {
         var prop = s[settingsAffectingSize[j]];
         if (goog.isDef(prop)) {
-          style[settingsAffectingSize[j]] = prop;
+          var styleName;
+          switch (settingsAffectingSize[j]) {
+            case 'fontStyle':
+              styleName = 'font-style';
+              break;
+            case 'fontVariant':
+              styleName = 'font-variant';
+              break;
+            case 'fontFamily':
+              styleName = 'font-family';
+              break;
+            case 'fontSize':
+              styleName = 'font-size';
+              break;
+            case 'fontWeight':
+              styleName = 'font-weight';
+              break;
+            case 'letterSpacing':
+              styleName = 'letter-spacing';
+              break;
+            case 'decoration':
+              styleName = 'text-decoration';
+              break;
+          }
+
+          style[styleName] = prop;
           break;
         }
       }
