@@ -1301,7 +1301,7 @@ acgraph.vector.Text.prototype.addSegment = function(text, opt_style) {
   var shift = this.segments_.length == 0 ? this.textIndent_ : 0;
 
   // If text width and textWrap are set - start putting a segement into the given bounds.
-  if (this.style_['width']) {
+  if (goog.isDefAndNotNull(this.style_['width'])) {
     // if a new segment, with all segment already in place and offsets, doesnt' fit:
     // cut characters.
 
@@ -1517,14 +1517,58 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
     this.text_ = goog.string.canonicalizeNewlines(goog.string.normalizeSpaces(this.text_));
     var textArr = this.text_.split(q);
 
-    for (i = 0; i < textArr.length; i++) {
-      text = textArr[i];
-      if (goog.isDefAndNotNull(text)) {
-        if (text == '') {
-          this.addBreak();
-        } else {
-          this.addSegment(text);
-          this.addBreak();
+    if (textArr.length == 1 && !goog.isDefAndNotNull(this.style_['width'])) {
+      this.createDom(true);
+      this.renderStyle();
+
+      // var segment_bounds = this.getTextBounds(this.text_, {});
+      // this.createSegment_(this.text_, {}, segment_bounds);
+      // create segment object
+
+      var segment = new acgraph.vector.TextSegment(this.text_, {});
+      this.currentLine_.push(segment);
+      this.segments_.push(segment);
+      segment.parent(this);
+
+      this.renderData();
+      var bounds = acgraph.getRenderer().measureSelf(this.domElement());
+
+      segment.baseLine = -bounds.top;
+      segment.height = bounds.height;
+      segment.width = bounds.width;
+
+      if (this.textIndent_ && this.segments_.length == 0) {
+        var shift = 0;
+        this.textIndent_ = this.width_ && (this.textIndent_ + bounds.width + shift > this.width_) ?
+            this.width_ - bounds.width - shift :
+            this.textIndent_;
+        if (this.textIndent_ < 0) this.textIndent_ = 0;
+      }
+
+      // calculate line params with newly added segment.
+      this.currentLineHeight_ = Math.max(this.currentLineHeight_, bounds.height);
+      this.currentLineWidth_ += bounds.width;
+      if (this.segments_.length == 0) this.currentLineWidth_ += this.textIndent_;
+      this.currentBaseLine_ = Math.max(this.currentBaseLine_, segment.baseLine);
+      this.currentLineEmpty_ = this.currentLine_.length ? this.currentLineEmpty_ && this.text_.length == 0 : this.text_.length == 0;
+
+      this.finalizeTextLine();
+      this.currentNumberSeqBreaks_++;
+      var height = this.currentLine_[0] ? this.currentLine_[0].height : 0;
+      this.accumulatedHeight_ += goog.isString(this.lineHeight_) ?
+          parseInt(this.lineHeight_, 0) + height :
+          this.lineHeight_ * height;
+
+    } else {
+      for (i = 0; i < textArr.length; i++) {
+        text = textArr[i];
+        if (goog.isDefAndNotNull(text)) {
+          if (text == '') {
+            this.addBreak();
+          } else {
+            this.addSegment(text);
+            this.addBreak();
+          }
         }
       }
     }

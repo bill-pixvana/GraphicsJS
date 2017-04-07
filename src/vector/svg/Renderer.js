@@ -248,6 +248,15 @@ acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
 };
 
 
+acgraph.vector.svg.Renderer.prototype.measureSelf = function(element) {
+  if (!this.measurement_) this.createMeasurement_();
+  goog.dom.appendChild(this.measurement_, element);
+
+  var bbox = element['getBBox']();
+  return new goog.math.Rect(bbox.x, bbox.y, bbox.width, bbox.height);
+};
+
+
 /**
  * Measure any svg nodes.
  * @param {string|Node} element .
