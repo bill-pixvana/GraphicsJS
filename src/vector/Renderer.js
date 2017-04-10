@@ -16,6 +16,8 @@ acgraph.vector.Renderer = function() {
 
   /** @type {Array.<string>} */
   this.settingsAffectingSize = ['fontStyle', 'fontVariant', 'fontFamily', 'fontSize', 'fontWeight', 'letterSpacing', 'decoration'];
+
+  this.cssStyleNames = ['font-style', 'font-variant', 'font-family', 'font-size', 'font-weight', 'letter-spacing', 'text-decoration', 'fill'];
 };
 goog.addSingletonGetter(acgraph.vector.Renderer);
 

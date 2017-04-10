@@ -249,11 +249,13 @@ acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
 
 
 acgraph.vector.svg.Renderer.prototype.measureSelf = function(element) {
-  if (!this.measurement_) this.createMeasurement_();
-  goog.dom.appendChild(this.measurement_, element);
+  // if (!this.measurement_) this.createMeasurement_();
 
-  var bbox = element['getBBox']();
-  return new goog.math.Rect(bbox.x, bbox.y, bbox.width, bbox.height);
+  this.measurement_.appendChild(element);
+
+  // var bbox = element['getBBox']();
+  // return new goog.math.Rect(bbox.x, bbox.y, bbox.width, bbox.height);
+  return element['getBBox']();
 };
 
 
@@ -732,6 +734,143 @@ acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
     }
   } else
     this.removeAttribute_(domElement, 'text-decoration');
+
+  //text style
+  if (style['direction'])
+    this.setAttribute_(domElement, 'direction', style['direction']);
+  else
+    this.removeAttribute_(domElement, 'direction');
+
+  if (style['hAlign']) {
+    var align;
+
+    if (style['direction'] == 'rtl') {
+      if (goog.userAgent.GECKO || goog.userAgent.IE) {
+        align = (style['hAlign'] == acgraph.vector.Text.HAlign.END || style['hAlign'] == acgraph.vector.Text.HAlign.LEFT) ?
+            acgraph.vector.Text.HAlign.START :
+            (style['hAlign'] == acgraph.vector.Text.HAlign.START || style['hAlign'] == acgraph.vector.Text.HAlign.RIGHT) ?
+                acgraph.vector.Text.HAlign.END :
+                'middle';
+      } else {
+        align = (style['hAlign'] == acgraph.vector.Text.HAlign.END || style['hAlign'] == acgraph.vector.Text.HAlign.LEFT) ?
+            acgraph.vector.Text.HAlign.END :
+            (style['hAlign'] == acgraph.vector.Text.HAlign.START || style['hAlign'] == acgraph.vector.Text.HAlign.RIGHT) ?
+                acgraph.vector.Text.HAlign.START :
+                'middle';
+      }
+    } else {
+      align = (style['hAlign'] == acgraph.vector.Text.HAlign.END || style['hAlign'] == acgraph.vector.Text.HAlign.RIGHT) ?
+          acgraph.vector.Text.HAlign.END :
+          (style['hAlign'] == acgraph.vector.Text.HAlign.START || style['hAlign'] == acgraph.vector.Text.HAlign.LEFT) ?
+              acgraph.vector.Text.HAlign.START :
+              'middle';
+    }
+    this.setAttribute_(domElement, 'text-anchor', /** @type {string} */ (align));
+  } else
+    this.removeAttribute_(domElement, 'text-anchor');
+
+  if (style['opacity'])
+    domElement.style['opacity'] = style['opacity'];
+  else
+    domElement.style['opacity'] = '1';
+};
+
+
+/** @inheritDoc */
+acgraph.vector.svg.Renderer.prototype.setTextPropertiesExp = function(element) {
+  var style = element.style();
+  var domElement = element.domElement();
+
+  // if (!element.selectable()) {
+  //   domElement.style['-webkit-touch-callout'] = 'none';
+  //   domElement.style['-webkit-user-select'] = 'none';
+  //   domElement.style['-khtml-user-select'] = 'none';
+  //   domElement.style['-moz-user-select'] = 'moz-none';
+  //   domElement.style['-ms-user-select'] = 'none';
+  //   domElement.style['-o-user-select'] = 'none';
+  //   domElement.style['user-select'] = 'none';
+  //
+  //   if ((goog.userAgent.IE && goog.userAgent.DOCUMENT_MODE == 9) || goog.userAgent.OPERA) {
+  //     this.setAttribute_(domElement, 'unselectable', 'on');
+  //     this.setAttribute_(domElement, 'onselectstart', 'return false;');
+  //   }
+  // } else {
+  //   domElement.style['-webkit-touch-callout'] = '';
+  //   domElement.style['-webkit-user-select'] = '';
+  //   domElement.style['-khtml-user-select'] = '';
+  //   domElement.style['-moz-user-select'] = '';
+  //   domElement.style['-ms-user-select'] = '';
+  //   domElement.style['-o-user-select'] = '';
+  //   domElement.style['user-select'] = '';
+  //
+  //   if ((goog.userAgent.IE && goog.userAgent.DOCUMENT_MODE == 9) || goog.userAgent.OPERA) {
+  //     this.removeAttribute_(domElement, 'unselectable');
+  //     this.removeAttribute_(domElement, 'onselectstart');
+  //   }
+  // }
+
+  for (var i = 0, l = this.cssStyleNames.length; i < l; i++) {
+    var cssName = this.cssStyleNames[i];
+    domElement.style[cssName] = style[cssName];
+  }
+
+  // //like segment style
+  // if (style['fontStyle'])
+  //   this.setAttribute_(domElement, 'font-style', style['fontStyle']);
+  // else
+  //   this.removeAttribute_(domElement, 'font-style');
+  //
+  // if (style.fontVariant) {
+  //   if (goog.userAgent.GECKO) {
+  //     domElement.style['font-variant'] = style['fontVariant'];
+  //   } else {
+  //     this.setAttribute_(domElement, 'font-variant', style['fontVariant']);
+  //   }
+  // } else {
+  //   if (goog.userAgent.GECKO) {
+  //     domElement.style['font-variant'] = '';
+  //   } else {
+  //     this.removeAttribute_(domElement, 'font-variant');
+  //   }
+  // }
+  //
+  // if (style['fontFamily'])
+  //   this.setAttribute_(domElement, 'font-family', style['fontFamily']);
+  // else
+  //   this.removeAttribute_(domElement, 'font-family');
+  //
+  // if (style['fontSize'])
+  //   this.setAttribute_(domElement, 'font-size', style['fontSize']);
+  // else
+  //   this.removeAttribute_(domElement, 'font-size');
+  //
+  // if (style['fontWeight'])
+  //   this.setAttribute_(domElement, 'font-weight', style['fontWeight']);
+  // else
+  //   this.removeAttribute_(domElement, 'font-weight');
+  //
+  // if (style['color'])
+  //   this.setAttribute_(domElement, 'fill', style['color']);
+  // else
+  //   this.removeAttribute_(domElement, 'fill');
+  //
+  // if (style['letterSpacing'])
+  //   this.setAttribute_(domElement, 'letter-spacing', style['letterSpacing']);
+  // else
+  //   this.removeAttribute_(domElement, 'letter-spacing');
+
+  // if (style['decoration']) {
+  //   if (goog.userAgent.GECKO) {
+  //     //Text-decoration does not work in Mozilla – there is a bug report about it in their bugtracker:
+  //     //https://bugzilla.mozilla.org/show_bug.cgi?id=317196
+  //     //domElement.style['text-decoration'] = style.decoration;  //does not work either.
+  //     this.setAttribute_(domElement, 'text-decoration', style['decoration']);
+  //
+  //   } else {
+  //     this.setAttribute_(domElement, 'text-decoration', style['decoration']);
+  //   }
+  // } else
+  //   this.removeAttribute_(domElement, 'text-decoration');
 
   //text style
   if (style['direction'])

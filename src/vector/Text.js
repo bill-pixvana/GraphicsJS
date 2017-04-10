@@ -550,8 +550,10 @@ acgraph.vector.Text.prototype.height = function(opt_value) {
  */
 acgraph.vector.Text.prototype.opacity = function(opt_value) {
   if (goog.isDefAndNotNull(opt_value)) {
-    this.style_['opacity'] = opt_value;
-    this.setDirtyState(acgraph.vector.Element.DirtyState.STYLE);
+    if (this.style_['opacity'] != opt_value) {
+      this.style_['opacity'] = opt_value;
+      this.setDirtyState(acgraph.vector.Element.DirtyState.STYLE);
+    }
     return this;
   }
   return this.style_['opacity'];
@@ -565,11 +567,13 @@ acgraph.vector.Text.prototype.opacity = function(opt_value) {
  */
 acgraph.vector.Text.prototype.color = function(opt_value) {
   if (goog.isDefAndNotNull(opt_value)) {
-    this.style_['color'] = opt_value;
-    this.setDirtyState(acgraph.vector.Element.DirtyState.STYLE);
+    if (this.style_['fill'] != opt_value) {
+      this.style_['fill'] = opt_value;
+      this.setDirtyState(acgraph.vector.Element.DirtyState.STYLE);
+    }
     return this;
   }
-  return this.style_['color'];
+  return this.style_['fill'];
 };
 
 
@@ -579,7 +583,7 @@ acgraph.vector.Text.prototype.color = function(opt_value) {
  @return {string|number|acgraph.vector.Text}
  */
 acgraph.vector.Text.prototype.fontSize = function(opt_value) {
-  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('fontSize', opt_value));
+  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('font-size', opt_value));
 };
 
 
@@ -589,7 +593,7 @@ acgraph.vector.Text.prototype.fontSize = function(opt_value) {
  @return {string|acgraph.vector.Text}
  */
 acgraph.vector.Text.prototype.fontFamily = function(opt_value) {
-  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('fontFamily', opt_value));
+  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('font-family', opt_value));
 };
 
 
@@ -609,7 +613,7 @@ acgraph.vector.Text.prototype.direction = function(opt_value) {
  @return {acgraph.vector.Text.FontStyle|string|acgraph.vector.Text}
  */
 acgraph.vector.Text.prototype.fontStyle = function(opt_value) {
-  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('fontStyle', /** @type {string} */(opt_value)));
+  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('font-style', /** @type {string} */(opt_value)));
 };
 
 
@@ -619,7 +623,7 @@ acgraph.vector.Text.prototype.fontStyle = function(opt_value) {
  @return {acgraph.vector.Text.FontVariant|string|acgraph.vector.Text}
  */
 acgraph.vector.Text.prototype.fontVariant = function(opt_value) {
-  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('fontVariant', /** @type {string} */(opt_value)));
+  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('font-variant', /** @type {string} */(opt_value)));
 };
 
 
@@ -629,7 +633,7 @@ acgraph.vector.Text.prototype.fontVariant = function(opt_value) {
  @return {string|number|acgraph.vector.Text}
  */
 acgraph.vector.Text.prototype.fontWeight = function(opt_value) {
-  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('fontWeight', opt_value));
+  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('font-weight', opt_value));
 };
 
 
@@ -639,7 +643,7 @@ acgraph.vector.Text.prototype.fontWeight = function(opt_value) {
  @return {string|number|acgraph.vector.Text}
  */
 acgraph.vector.Text.prototype.letterSpacing = function(opt_value) {
-  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('letterSpacing', opt_value));
+  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('letter-spacing', opt_value));
 };
 
 
@@ -649,7 +653,7 @@ acgraph.vector.Text.prototype.letterSpacing = function(opt_value) {
  @return {acgraph.vector.Text.Decoration|string|acgraph.vector.Text}
  */
 acgraph.vector.Text.prototype.decoration = function(opt_value) {
-  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('decoration', /** @type {string} */(opt_value)));
+  return /** @type {string|acgraph.vector.Text} */ (this.setStyleProperty('text-decoration', /** @type {string} */(opt_value)));
 };
 
 
@@ -661,7 +665,7 @@ acgraph.vector.Text.prototype.decoration = function(opt_value) {
 acgraph.vector.Text.prototype.lineHeight = function(opt_value) {
   if (goog.isDefAndNotNull(opt_value))
     this.lineHeight_ = this.normalizeLineHeight_(opt_value);
-  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('lineHeight', opt_value));
+  return /** @type {number|string|acgraph.vector.Text} */ (this.setStyleProperty('line-height', opt_value));
 };
 
 
@@ -780,7 +784,7 @@ acgraph.vector.Text.prototype.style = function(opt_value) {
     this.height_ = parseFloat(this.style_['height']) || 0;
 
     if (this.style_['lineHeight']) {
-      this.lineHeight_ = this.normalizeLineHeight_(this.style_['lineHeight']);
+      this.lineHeight_ = this.normalizeLineHeight_(this.style_['line-height']);
     }
 
     var validParam;
@@ -832,6 +836,50 @@ acgraph.vector.Text.prototype.style = function(opt_value) {
     return this;
   }
   return this.style_;
+};
+
+
+acgraph.vector.Text.prototype.setStyle = function(value) {
+  goog.object.forEach(value, function(value, key) {
+    var styleName = key;
+    switch (key) {
+      case 'fontStyle':
+        styleName = 'font-style';
+        break;
+      case 'fontVariant':
+        styleName = 'font-variant';
+        break;
+      case 'fontFamily':
+        styleName = 'font-family';
+        break;
+      case 'fontSize':
+        styleName = 'font-size';
+        break;
+      case 'fontWeight':
+        styleName = 'font-weight';
+        break;
+      case 'letterSpacing':
+        styleName = 'letter-spacing';
+        break;
+      case 'lineHeight':
+        styleName = 'line-height';
+        this.lineHeight_ = this.normalizeLineHeight_(value);
+        break;
+      case 'decoration':
+      case 'fontDecoration':
+      case 'textDecoration':
+        styleName = 'text-decoration';
+        break;
+      case 'fontColor':
+      case 'color':
+        styleName = 'fill';
+        break;
+      case 'fontOpacity':
+        styleName = 'opacity';
+        break;
+    }
+    this.style_[styleName] = value;
+  }, this);
 };
 
 
@@ -1035,6 +1083,9 @@ acgraph.vector.Text.prototype.mergeStyles_ = function(var_args) {
               break;
             case 'decoration':
               styleName = 'text-decoration';
+              break;
+            case 'color':
+              styleName = 'color';
               break;
           }
 
@@ -1533,7 +1584,7 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
       this.renderData();
       var bounds = acgraph.getRenderer().measureSelf(this.domElement());
 
-      segment.baseLine = -bounds.top;
+      segment.baseLine = -bounds.y;
       segment.height = bounds.height;
       segment.width = bounds.width;
 
@@ -1654,7 +1705,7 @@ acgraph.vector.Text.prototype.renderPosition = function() {
  */
 acgraph.vector.Text.prototype.renderStyle = function() {
   // Apply data to DOM element
-  acgraph.getRenderer().setTextProperties(this);
+  acgraph.getRenderer().setTextPropertiesExp(this);
   // Set unsync data flag
   this.clearDirtyState(acgraph.vector.Element.DirtyState.STYLE);
 };
