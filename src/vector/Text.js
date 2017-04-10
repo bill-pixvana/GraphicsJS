@@ -479,9 +479,9 @@ acgraph.vector.Text.prototype.setStyleProperty = function(prop, opt_value) {
       if (!stageSuspended) this.getStage().suspend();
       this.style_[prop] = opt_value;
       this.defragmented = false;
-      this.setDirtyState(acgraph.vector.Element.DirtyState.STYLE);
-      this.setDirtyState(acgraph.vector.Element.DirtyState.DATA);
-      this.setDirtyState(acgraph.vector.Element.DirtyState.POSITION);
+      // this.setDirtyState(acgraph.vector.Element.DirtyState.STYLE);
+      // this.setDirtyState(acgraph.vector.Element.DirtyState.DATA);
+      // this.setDirtyState(acgraph.vector.Element.DirtyState.POSITION);
       this.transformAfterChange();
       if (!stageSuspended) this.getStage().resume();
     }
