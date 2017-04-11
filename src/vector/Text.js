@@ -1061,35 +1061,7 @@ acgraph.vector.Text.prototype.mergeStyles_ = function(var_args) {
       if (s) {
         var prop = s[settingsAffectingSize[j]];
         if (goog.isDef(prop)) {
-          var styleName;
-          switch (settingsAffectingSize[j]) {
-            case 'fontStyle':
-              styleName = 'font-style';
-              break;
-            case 'fontVariant':
-              styleName = 'font-variant';
-              break;
-            case 'fontFamily':
-              styleName = 'font-family';
-              break;
-            case 'fontSize':
-              styleName = 'font-size';
-              break;
-            case 'fontWeight':
-              styleName = 'font-weight';
-              break;
-            case 'letterSpacing':
-              styleName = 'letter-spacing';
-              break;
-            case 'decoration':
-              styleName = 'text-decoration';
-              break;
-            case 'color':
-              styleName = 'color';
-              break;
-          }
-
-          style[styleName] = prop;
+          style[settingsAffectingSize[j]] = prop;
           break;
         }
       }
@@ -1558,7 +1530,7 @@ acgraph.vector.Text.prototype.calculateY = function() {
 acgraph.vector.Text.prototype.textDefragmentation = function() {
   this.init_();
 
-  var text, i;
+  var text, i, segment;
   if (this.text_ == null) return;
 
   if (this.htmlOn_) {
@@ -1572,11 +1544,7 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
       this.createDom(true);
       this.renderStyle();
 
-      // var segment_bounds = this.getTextBounds(this.text_, {});
-      // this.createSegment_(this.text_, {}, segment_bounds);
-      // create segment object
-
-      var segment = new acgraph.vector.TextSegment(this.text_, {});
+      segment = new acgraph.vector.TextSegment(this.text_, {});
       this.currentLine_.push(segment);
       this.segments_.push(segment);
       segment.parent(this);
@@ -1627,7 +1595,7 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
 
   if (this.textIndent_ && this.textLines_.length > 0) {
     var line = this.textLines_[0];
-    var segment = line[0];
+    segment = line[0];
     if (this.rtl) {
       if (!this.style_['hAlign'] ||
           this.style_['hAlign'] == acgraph.vector.Text.HAlign.START ||
@@ -1705,7 +1673,7 @@ acgraph.vector.Text.prototype.renderPosition = function() {
  */
 acgraph.vector.Text.prototype.renderStyle = function() {
   // Apply data to DOM element
-  acgraph.getRenderer().setTextPropertiesExp(this);
+  acgraph.getRenderer().setTextProperties(this);
   // Set unsync data flag
   this.clearDirtyState(acgraph.vector.Element.DirtyState.STYLE);
 };
