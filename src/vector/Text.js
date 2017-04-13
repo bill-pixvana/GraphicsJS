@@ -1541,7 +1541,9 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
     var textArr = this.text_.split(q);
 
     if (textArr.length == 1 && !goog.isDefAndNotNull(this.style_['width'])) {
-      this.createDom(true);
+      if (!this.domElement()) {
+        this.createDom(true);
+      }
       this.renderStyle();
 
       segment = new acgraph.vector.TextSegment(this.text_, {});
@@ -1550,7 +1552,7 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
       segment.parent(this);
 
       this.renderData();
-      var bounds = acgraph.getRenderer().measureSelf(this.domElement());
+      var bounds = acgraph.getRenderer().getBBox(this.domElement());
 
       segment.baseLine = -bounds.y;
       segment.height = bounds.height;

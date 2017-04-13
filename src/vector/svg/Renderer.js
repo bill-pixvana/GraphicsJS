@@ -162,9 +162,8 @@ acgraph.vector.svg.Renderer.prototype.getAttribute_ = function(el, key) {
 //----------------------------------------------------------------------------------------------------------------------
 /**
  * Desc.
- * @private
  */
-acgraph.vector.svg.Renderer.prototype.createMeasurement_ = function() {
+acgraph.vector.svg.Renderer.prototype.createMeasurement = function() {
   this.measurement_ = this.createSVGElement_('svg');
   this.measurementText_ = this.createTextElement();
   this.measurementTextNode_ = this.createTextNode('');
@@ -172,6 +171,9 @@ acgraph.vector.svg.Renderer.prototype.createMeasurement_ = function() {
   goog.dom.appendChild(this.measurementText_, this.measurementTextNode_);
   goog.dom.appendChild(this.measurement_, this.measurementText_);
   goog.dom.appendChild(goog.dom.getDocument().body, this.measurement_);
+
+  this.measurementLayerForBBox_ = this.createLayerElement();
+  goog.dom.appendChild(this.measurement_, this.measurementLayerForBBox_);
 
   //We need set 'display: block' for <svg> element to prevent scrollbar on 100% height of parent container (see DVF-620)
   this.setAttributes_(this.measurement_, {'display': 'block', 'width': 0, 'height': 0});
@@ -189,7 +191,7 @@ acgraph.vector.svg.Renderer.prototype.createMeasurement_ = function() {
  */
 acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
   //if (text == '') return new goog.math.Rect(0, 0, 0, 0);
-  if (!this.measurement_) this.createMeasurement_();
+  if (!this.measurement_) this.createMeasurement();
 
   var spaceWidth = null;
   var additionWidth = 0;
@@ -248,13 +250,13 @@ acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
 };
 
 
-acgraph.vector.svg.Renderer.prototype.measureSelf = function(element) {
-  // if (!this.measurement_) this.createMeasurement_();
-
-  this.measurement_.appendChild(element);
-
-  // var bbox = element['getBBox']();
-  // return new goog.math.Rect(bbox.x, bbox.y, bbox.width, bbox.height);
+/**
+ * Measure DOM text element.
+ * @param {Element} element .
+ * @return {{x: number, y: number, width: number, height: number}} .
+ */
+acgraph.vector.svg.Renderer.prototype.getBBox = function(element) {
+  this.measurementLayerForBBox_.appendChild(element);
   return element['getBBox']();
 };
 
@@ -265,7 +267,7 @@ acgraph.vector.svg.Renderer.prototype.measureSelf = function(element) {
  * @return {goog.math.Rect} .
  */
 acgraph.vector.svg.Renderer.prototype.measureElement = function(element) {
-  if (!this.measurement_) this.createMeasurement_();
+  if (!this.measurement_) this.createMeasurement();
 
   if (goog.isString(element)) {
     this.measurementGroupNode_.innerHTML = element;
@@ -646,96 +648,38 @@ acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
   var style = element.style();
   var domElement = element.domElement();
 
-  // if (!element.selectable()) {
-  //   domElement.style['-webkit-touch-callout'] = 'none';
-  //   domElement.style['-webkit-user-select'] = 'none';
-  //   domElement.style['-khtml-user-select'] = 'none';
-  //   domElement.style['-moz-user-select'] = 'moz-none';
-  //   domElement.style['-ms-user-select'] = 'none';
-  //   domElement.style['-o-user-select'] = 'none';
-  //   domElement.style['user-select'] = 'none';
-  //
-  //   if ((goog.userAgent.IE && goog.userAgent.DOCUMENT_MODE == 9) || goog.userAgent.OPERA) {
-  //     this.setAttribute_(domElement, 'unselectable', 'on');
-  //     this.setAttribute_(domElement, 'onselectstart', 'return false;');
-  //   }
-  // } else {
-  //   domElement.style['-webkit-touch-callout'] = '';
-  //   domElement.style['-webkit-user-select'] = '';
-  //   domElement.style['-khtml-user-select'] = '';
-  //   domElement.style['-moz-user-select'] = '';
-  //   domElement.style['-ms-user-select'] = '';
-  //   domElement.style['-o-user-select'] = '';
-  //   domElement.style['user-select'] = '';
-  //
-  //   if ((goog.userAgent.IE && goog.userAgent.DOCUMENT_MODE == 9) || goog.userAgent.OPERA) {
-  //     this.removeAttribute_(domElement, 'unselectable');
-  //     this.removeAttribute_(domElement, 'onselectstart');
-  //   }
-  // }
+  if (!element.selectable()) {
+    domElement.style['-webkit-touch-callout'] = 'none';
+    domElement.style['-webkit-user-select'] = 'none';
+    domElement.style['-khtml-user-select'] = 'none';
+    domElement.style['-moz-user-select'] = 'moz-none';
+    domElement.style['-ms-user-select'] = 'none';
+    domElement.style['-o-user-select'] = 'none';
+    domElement.style['user-select'] = 'none';
+
+    if ((goog.userAgent.IE && goog.userAgent.DOCUMENT_MODE == 9) || goog.userAgent.OPERA) {
+      this.setAttribute_(domElement, 'unselectable', 'on');
+      this.setAttribute_(domElement, 'onselectstart', 'return false;');
+    }
+  } else {
+    domElement.style['-webkit-touch-callout'] = '';
+    domElement.style['-webkit-user-select'] = '';
+    domElement.style['-khtml-user-select'] = '';
+    domElement.style['-moz-user-select'] = '';
+    domElement.style['-ms-user-select'] = '';
+    domElement.style['-o-user-select'] = '';
+    domElement.style['user-select'] = '';
+
+    if ((goog.userAgent.IE && goog.userAgent.DOCUMENT_MODE == 9) || goog.userAgent.OPERA) {
+      this.removeAttribute_(domElement, 'unselectable');
+      this.removeAttribute_(domElement, 'onselectstart');
+    }
+  }
 
   for (var i = 0, l = this.cssStyleNames.length; i < l; i++) {
     var cssName = this.cssStyleNames[i];
     domElement.style[cssName] = style[cssName];
   }
-
-  // //like segment style
-  // if (style['fontStyle'])
-  //   this.setAttribute_(domElement, 'font-style', style['fontStyle']);
-  // else
-  //   this.removeAttribute_(domElement, 'font-style');
-  //
-  // if (style.fontVariant) {
-  //   if (goog.userAgent.GECKO) {
-  //     domElement.style['font-variant'] = style['fontVariant'];
-  //   } else {
-  //     this.setAttribute_(domElement, 'font-variant', style['fontVariant']);
-  //   }
-  // } else {
-  //   if (goog.userAgent.GECKO) {
-  //     domElement.style['font-variant'] = '';
-  //   } else {
-  //     this.removeAttribute_(domElement, 'font-variant');
-  //   }
-  // }
-  //
-  // if (style['fontFamily'])
-  //   this.setAttribute_(domElement, 'font-family', style['fontFamily']);
-  // else
-  //   this.removeAttribute_(domElement, 'font-family');
-  //
-  // if (style['fontSize'])
-  //   this.setAttribute_(domElement, 'font-size', style['fontSize']);
-  // else
-  //   this.removeAttribute_(domElement, 'font-size');
-  //
-  // if (style['fontWeight'])
-  //   this.setAttribute_(domElement, 'font-weight', style['fontWeight']);
-  // else
-  //   this.removeAttribute_(domElement, 'font-weight');
-  //
-  // if (style['color'])
-  //   this.setAttribute_(domElement, 'fill', style['color']);
-  // else
-  //   this.removeAttribute_(domElement, 'fill');
-  //
-  // if (style['letterSpacing'])
-  //   this.setAttribute_(domElement, 'letter-spacing', style['letterSpacing']);
-  // else
-  //   this.removeAttribute_(domElement, 'letter-spacing');
-
-  // if (style['decoration']) {
-  //   if (goog.userAgent.GECKO) {
-  //     //Text-decoration does not work in Mozilla – there is a bug report about it in their bugtracker:
-  //     //https://bugzilla.mozilla.org/show_bug.cgi?id=317196
-  //     //domElement.style['text-decoration'] = style.decoration;  //does not work either.
-  //     this.setAttribute_(domElement, 'text-decoration', style['decoration']);
-  //
-  //   } else {
-  //     this.setAttribute_(domElement, 'text-decoration', style['decoration']);
-  //   }
-  // } else
-  //   this.removeAttribute_(domElement, 'text-decoration');
 
   //text style
   if (style['direction'])
