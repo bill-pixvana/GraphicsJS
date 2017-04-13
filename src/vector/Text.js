@@ -1544,17 +1544,20 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
       if (!this.domElement()) {
         this.createDom(true);
       }
-      this.renderStyle();
+      if (this.hasDirtyState(acgraph.vector.Element.DirtyState.STYLE))
+        this.renderStyle();
 
       segment = new acgraph.vector.TextSegment(this.text_, {});
       this.currentLine_.push(segment);
       this.segments_.push(segment);
       segment.parent(this);
 
-      this.renderData();
-      var bounds = acgraph.getRenderer().getBBox(this.domElement());
+      if (this.hasDirtyState(acgraph.vector.Element.DirtyState.DATA))
+        this.renderData();
 
-      segment.baseLine = -bounds.y;
+      var bounds = acgraph.getRenderer().getBBox(this.domElement(), this.text_, this.style_);
+
+      segment.baseLine = -bounds.top;
       segment.height = bounds.height;
       segment.width = bounds.width;
 

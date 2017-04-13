@@ -253,11 +253,36 @@ acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
 /**
  * Measure DOM text element.
  * @param {Element} element .
- * @return {{x: number, y: number, width: number, height: number}} .
+ * @param {string} text .
+ * @param {Object} style .
+ * @return {goog.math.Rect} .
  */
-acgraph.vector.svg.Renderer.prototype.getBBox = function(element) {
-  this.measurementLayerForBBox_.appendChild(element);
-  return element['getBBox']();
+acgraph.vector.svg.Renderer.prototype.getBBox = function(element, text, style) {
+  var boundsCache = this.textBoundsCache;
+  var styleHash = this.getStyleHash(style);
+  var styleCache = boundsCache[styleHash];
+  if (!styleCache) styleCache = boundsCache[styleHash] = {};
+  var textBoundsCache = styleCache[text];
+
+  if (textBoundsCache) {
+    return textBoundsCache;
+  } else {
+    var parentNode = element.parentNode;
+    var x = element.getAttribute('x');
+    var y = element.getAttribute('y');
+
+    this.setAttribute_(element, 'x', 0);
+    this.setAttribute_(element, 'y', 0);
+
+    this.measurementLayerForBBox_.appendChild(element);
+    var bbox = element['getBBox']();
+
+    if (x) this.setAttribute_(element, 'x', x);
+    if (y) this.setAttribute_(element, 'y', y);
+
+    if (parentNode) parentNode.appendChild(element);
+    return styleCache[text] = new goog.math.Rect(bbox.x, bbox.y, bbox.width, bbox.height);
+  }
 };
 
 
