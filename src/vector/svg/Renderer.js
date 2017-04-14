@@ -209,33 +209,12 @@ acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
       additionWidth += spaceWidth || this.getSpaceBounds(style).width;
   }
 
-  style['fontStyle'] ?
-      this.setAttribute_(this.measurementText_, 'font-style', style['fontStyle']) :
-      this.removeAttribute_(this.measurementText_, 'font-style');
+  this.measurementText_.style.cssText = '';
 
-  style['fontVariant'] ?
-      this.setAttribute_(this.measurementText_, 'font-variant', style['fontVariant']) :
-      this.removeAttribute_(this.measurementText_, 'font-variant');
-
-  style['fontFamily'] ?
-      this.setAttribute_(this.measurementText_, 'font-family', style['fontFamily']) :
-      this.removeAttribute_(this.measurementText_, 'font-family');
-
-  style['fontSize'] ?
-      this.setAttribute_(this.measurementText_, 'font-size', style['fontSize']) :
-      this.removeAttribute_(this.measurementText_, 'font-size');
-
-  style['fontWeight'] ?
-      this.setAttribute_(this.measurementText_, 'font-weight', style['fontWeight']) :
-      this.removeAttribute_(this.measurementText_, 'font-weight');
-
-  style['letterSpacing'] ?
-      this.setAttribute_(this.measurementText_, 'letter-spacing', style['letterSpacing']) :
-      this.removeAttribute_(this.measurementText_, 'letter-spacing');
-
-  style['decoration'] ?
-      this.setAttribute_(this.measurementText_, 'text-decoration', style['decoration']) :
-      this.removeAttribute_(this.measurementText_, 'text-decoration');
+  for (var i = 0, l = this.cssStyleNames.length; i < l; i++) {
+    var cssName = this.cssStyleNames[i];
+    this.measurementText_.style[cssName] = style[cssName];
+  }
 
   this.measurementTextNode_.nodeValue = text;
   var bbox = this.measurementText_['getBBox']();
@@ -673,6 +652,8 @@ acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
   var style = element.style();
   var domElement = element.domElement();
 
+  domElement.style.cssText = '';
+
   if (!element.selectable()) {
     domElement.style['-webkit-touch-callout'] = 'none';
     domElement.style['-webkit-user-select'] = 'none';
@@ -739,11 +720,6 @@ acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
     this.setAttribute_(domElement, 'text-anchor', /** @type {string} */ (align));
   } else
     this.removeAttribute_(domElement, 'text-anchor');
-
-  if (style['opacity'])
-    domElement.style['opacity'] = style['opacity'];
-  else
-    domElement.style['opacity'] = '1';
 };
 
 
