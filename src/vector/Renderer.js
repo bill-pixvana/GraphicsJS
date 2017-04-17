@@ -15,9 +15,7 @@ acgraph.vector.Renderer = function() {
   this.textBoundsCache = {};
 
   /** @type {Array.<string>} */
-  this.settingsAffectingSize = ['font-style', 'font-variant', 'font-family', 'font-size', 'font-weight', 'letter-spacing', 'text-decoration'];
-
-  this.cssStyleNames = ['font-style', 'font-variant', 'font-family', 'font-size', 'font-weight', 'letter-spacing', 'text-decoration', 'fill', 'opacity'];
+  this.settingsAffectingSize = ['fontStyle', 'fontVariant', 'fontFamily', 'fontSize', 'fontWeight', 'letterSpacing', 'decoration'];
 };
 goog.addSingletonGetter(acgraph.vector.Renderer);
 
