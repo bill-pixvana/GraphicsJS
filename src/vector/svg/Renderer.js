@@ -209,12 +209,33 @@ acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
       additionWidth += spaceWidth || this.getSpaceBounds(style).width;
   }
 
-  this.measurementText_.style.cssText = '';
+  style['fontStyle'] ?
+      this.setAttribute_(this.measurementText_, 'font-style', style['fontStyle']) :
+      this.removeAttribute_(this.measurementText_, 'font-style');
 
-  for (var i = 0, l = this.cssStyleNames.length; i < l; i++) {
-    var cssName = this.cssStyleNames[i];
-    this.measurementText_.style[cssName] = style[cssName];
-  }
+  style['fontVariant'] ?
+      this.setAttribute_(this.measurementText_, 'font-variant', style['fontVariant']) :
+      this.removeAttribute_(this.measurementText_, 'font-variant');
+
+  style['fontFamily'] ?
+      this.setAttribute_(this.measurementText_, 'font-family', style['fontFamily']) :
+      this.removeAttribute_(this.measurementText_, 'font-family');
+
+  style['fontSize'] ?
+      this.setAttribute_(this.measurementText_, 'font-size', style['fontSize']) :
+      this.removeAttribute_(this.measurementText_, 'font-size');
+
+  style['fontWeight'] ?
+      this.setAttribute_(this.measurementText_, 'font-weight', style['fontWeight']) :
+      this.removeAttribute_(this.measurementText_, 'font-weight');
+
+  style['letterSpacing'] ?
+      this.setAttribute_(this.measurementText_, 'letter-spacing', style['letterSpacing']) :
+      this.removeAttribute_(this.measurementText_, 'letter-spacing');
+
+  style['decoration'] ?
+      this.setAttribute_(this.measurementText_, 'text-decoration', style['decoration']) :
+      this.removeAttribute_(this.measurementText_, 'text-decoration');
 
   this.measurementTextNode_.nodeValue = text;
   var bbox = this.measurementText_['getBBox']();
@@ -652,8 +673,6 @@ acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
   var style = element.style();
   var domElement = element.domElement();
 
-  domElement.style.cssText = '';
-
   if (!element.selectable()) {
     domElement.style['-webkit-touch-callout'] = 'none';
     domElement.style['-webkit-user-select'] = 'none';
@@ -682,10 +701,66 @@ acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
     }
   }
 
-  for (var i = 0, l = this.cssStyleNames.length; i < l; i++) {
-    var cssName = this.cssStyleNames[i];
-    domElement.style[cssName] = style[cssName];
+  //Improves font display in Opera.
+  //if (goog.userAgent.OPERA) this.setAttribute_(domElement, 'text-rendering', 'geometricPrecision');
+
+  //like segment style
+  if (style['fontStyle'])
+    this.setAttribute_(domElement, 'font-style', style['fontStyle']);
+  else
+    this.removeAttribute_(domElement, 'font-style');
+
+  if (style.fontVariant) {
+    if (goog.userAgent.GECKO) {
+      domElement.style['font-variant'] = style['fontVariant'];
+    } else {
+      this.setAttribute_(domElement, 'font-variant', style['fontVariant']);
+    }
+  } else {
+    if (goog.userAgent.GECKO) {
+      domElement.style['font-variant'] = '';
+    } else {
+      this.removeAttribute_(domElement, 'font-variant');
+    }
   }
+
+  if (style['fontFamily'])
+    this.setAttribute_(domElement, 'font-family', style['fontFamily']);
+  else
+    this.removeAttribute_(domElement, 'font-family');
+
+  if (style['fontSize'])
+    this.setAttribute_(domElement, 'font-size', style['fontSize']);
+  else
+    this.removeAttribute_(domElement, 'font-size');
+
+  if (style['fontWeight'])
+    this.setAttribute_(domElement, 'font-weight', style['fontWeight']);
+  else
+    this.removeAttribute_(domElement, 'font-weight');
+
+  if (style['color'])
+    this.setAttribute_(domElement, 'fill', style['color']);
+  else
+    this.removeAttribute_(domElement, 'fill');
+
+  if (style['letterSpacing'])
+    this.setAttribute_(domElement, 'letter-spacing', style['letterSpacing']);
+  else
+    this.removeAttribute_(domElement, 'letter-spacing');
+
+  if (style['decoration']) {
+    if (goog.userAgent.GECKO) {
+      //Text-decoration does not work in Mozilla – there is a bug report about it in their bugtracker:
+      //https://bugzilla.mozilla.org/show_bug.cgi?id=317196
+      //domElement.style['text-decoration'] = style.decoration;  //does not work either.
+      this.setAttribute_(domElement, 'text-decoration', style['decoration']);
+
+    } else {
+      this.setAttribute_(domElement, 'text-decoration', style['decoration']);
+    }
+  } else
+    this.removeAttribute_(domElement, 'text-decoration');
 
   //text style
   if (style['direction'])
@@ -720,6 +795,11 @@ acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
     this.setAttribute_(domElement, 'text-anchor', /** @type {string} */ (align));
   } else
     this.removeAttribute_(domElement, 'text-anchor');
+
+  if (style['opacity'])
+    domElement.style['opacity'] = style['opacity'];
+  else
+    domElement.style['opacity'] = '1';
 };
 
 
