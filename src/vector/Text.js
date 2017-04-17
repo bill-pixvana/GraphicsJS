@@ -774,7 +774,23 @@ acgraph.vector.Text.prototype.selectable = function(opt_value) {
  */
 acgraph.vector.Text.prototype.style = function(opt_value) {
   if (goog.isDefAndNotNull(opt_value)) {
-    if (opt_value) goog.object.extend(this.style_, opt_value);
+
+    goog.object.forEach(opt_value, function(value, key) {
+      var styleName = key;
+      switch (key) {
+        case 'fontDecoration':
+        case 'textDecoration':
+          styleName = 'decoration';
+          break;
+        case 'fontColor':
+          styleName = 'color';
+          break;
+        case 'fontOpacity':
+          styleName = 'opacity';
+          break;
+      }
+      this.style_[styleName] = value;
+    }, this);
 
     this.width_ = parseFloat(this.style_['width']) || 0;
     this.height_ = parseFloat(this.style_['height']) || 0;
