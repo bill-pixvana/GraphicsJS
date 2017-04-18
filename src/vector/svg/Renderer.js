@@ -250,13 +250,7 @@ acgraph.vector.svg.Renderer.prototype.measure = function(text, style) {
 };
 
 
-/**
- * Measure DOM text element.
- * @param {Element} element .
- * @param {string} text .
- * @param {Object} style .
- * @return {goog.math.Rect} .
- */
+/** @inheritDoc */
 acgraph.vector.svg.Renderer.prototype.getBBox = function(element, text, style) {
   var boundsCache = this.textBoundsCache;
   var styleHash = this.getStyleHash(style);
@@ -267,6 +261,22 @@ acgraph.vector.svg.Renderer.prototype.getBBox = function(element, text, style) {
   if (textBoundsCache) {
     return textBoundsCache;
   } else {
+    var spaceWidth = null;
+    var additionWidth = 0;
+
+    if (text.length == 0) {
+      return this.getEmptyStringBounds(style);
+    }
+
+    if (goog.string.isSpace(text)) {
+      return this.getSpaceBounds(style);
+    } else {
+      if (goog.string.startsWith(text, ' '))
+        additionWidth += spaceWidth = this.getSpaceBounds(style).width;
+      if (goog.string.endsWith(text, ' '))
+        additionWidth += spaceWidth || this.getSpaceBounds(style).width;
+    }
+
     var parentNode = element.parentNode;
     var x = element.getAttribute('x');
     var y = element.getAttribute('y');
@@ -281,7 +291,7 @@ acgraph.vector.svg.Renderer.prototype.getBBox = function(element, text, style) {
     if (y) this.setAttribute_(element, 'y', y);
 
     if (parentNode) parentNode.appendChild(element);
-    return styleCache[text] = new goog.math.Rect(bbox.x, bbox.y, bbox.width, bbox.height);
+    return styleCache[text] = new goog.math.Rect(bbox.x, bbox.y, bbox.width + additionWidth, bbox.height);
   }
 };
 

@@ -1590,7 +1590,7 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
   this.calculateY();
 
   // text bounds.
-  this.bounds = new goog.math.Rect(this.x_, this.y_, this.width_, this.height_);
+  this.bounds = new goog.math.Rect(this.x_, this.y_, this.width_ + this.textIndent_, this.height_);
   this.defragmented = true;
 };
 

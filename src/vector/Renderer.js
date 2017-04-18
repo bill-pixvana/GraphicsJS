@@ -103,6 +103,18 @@ acgraph.vector.Renderer.prototype.textBounds = function(text, style, opt_bounds)
 
 
 /**
+ * Measure DOM text element.
+ * @param {Element} element .
+ * @param {string} text .
+ * @param {Object} style .
+ * @return {goog.math.Rect} .
+ */
+acgraph.vector.Renderer.prototype.getBBox = function(element, text, style) {
+  return this.textBounds(text, style);
+};
+
+
+/**
  * Whether the cache contains bounds of passed text and style.
  * @param {string} text .
  * @param {Object} style .
