@@ -1533,7 +1533,7 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
       this.currentLineHeight_ = bounds.height;
       this.currentLineWidth_ = bounds.width + this.textIndent_;
       this.currentBaseLine_ = segment.baseLine;
-      this.currentLineEmpty_ = this.currentLine_.length ? this.currentLineEmpty_ && this.text_.length == 0 : this.text_.length == 0;
+      this.currentLineEmpty_ = this.text_.length == 0;
 
       this.finalizeTextLine();
       this.currentNumberSeqBreaks_++;
