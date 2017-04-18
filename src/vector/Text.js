@@ -1529,19 +1529,10 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
       segment.height = bounds.height;
       segment.width = bounds.width;
 
-      if (this.textIndent_ && this.segments_.length == 0) {
-        var shift = 0;
-        this.textIndent_ = this.width_ && (this.textIndent_ + bounds.width + shift > this.width_) ?
-            this.width_ - bounds.width - shift :
-            this.textIndent_;
-        if (this.textIndent_ < 0) this.textIndent_ = 0;
-      }
-
       // calculate line params with newly added segment.
-      this.currentLineHeight_ = Math.max(this.currentLineHeight_, bounds.height);
-      this.currentLineWidth_ += bounds.width;
-      if (this.segments_.length == 0) this.currentLineWidth_ += this.textIndent_;
-      this.currentBaseLine_ = Math.max(this.currentBaseLine_, segment.baseLine);
+      this.currentLineHeight_ = bounds.height;
+      this.currentLineWidth_ = bounds.width + this.textIndent_;
+      this.currentBaseLine_ = segment.baseLine;
       this.currentLineEmpty_ = this.currentLine_.length ? this.currentLineEmpty_ && this.text_.length == 0 : this.text_.length == 0;
 
       this.finalizeTextLine();
@@ -1590,7 +1581,7 @@ acgraph.vector.Text.prototype.textDefragmentation = function() {
   this.calculateY();
 
   // text bounds.
-  this.bounds = new goog.math.Rect(this.x_, this.y_, this.width_ + this.textIndent_, this.height_);
+  this.bounds = new goog.math.Rect(this.x_, this.y_, this.width_, this.height_);
   this.defragmented = true;
 };
 
