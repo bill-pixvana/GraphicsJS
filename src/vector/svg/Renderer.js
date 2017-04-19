@@ -278,20 +278,14 @@ acgraph.vector.svg.Renderer.prototype.getBBox = function(element, text, style) {
     }
 
     var parentNode = element.parentNode;
-    var x = element.getAttribute('x');
-    var y = element.getAttribute('y');
-
-    this.setAttribute_(element, 'x', 0);
-    this.setAttribute_(element, 'y', 0);
 
     this.measurementLayerForBBox_.appendChild(element);
     var bbox = element['getBBox']();
-
-    if (x) this.setAttribute_(element, 'x', x);
-    if (y) this.setAttribute_(element, 'y', y);
-
     if (parentNode) parentNode.appendChild(element);
-    return styleCache[text] = new goog.math.Rect(bbox.x, bbox.y, bbox.width + additionWidth, bbox.height);
+
+    var x = element.getAttribute('x') || 0;
+    var y = element.getAttribute('y') || 0;
+    return styleCache[text] = new goog.math.Rect(bbox.x - x, bbox.y - y, bbox.width + additionWidth, bbox.height);
   }
 };
 
