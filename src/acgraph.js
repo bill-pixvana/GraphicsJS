@@ -402,6 +402,20 @@ acgraph.text = function(opt_x, opt_y, opt_text, opt_style) {
 
 
 /**
+ Creates, depending on the technology used, an instance of the {@link acgraph.vector.SimpleText} class.<br/>
+ <strong>Important:</strong> When an element is created this way, a parent element is not assigned to it automatically,
+ so it is necessary to set the parent element manually.
+ @param {string=} opt_text The text to display.
+ @return {!acgraph.vector.SimpleText} An instance of the {@link acgraph.vector.SimpleText} class.
+ */
+acgraph.simpleText = function(opt_text) {
+  var text = new acgraph.vector.SimpleText();
+  if (opt_text) text.text(opt_text);
+  return text;
+};
+
+
+/**
  Creates an instance of the{@link acgraph.vector.HatchFill} class in case a fill with such parameters does not
  exist. If there is already a fill with such parameters, an instance of it is returned.<br/>
  To learn more about working with hatch fills, see: {@link acgraph.vector.HatchFill}

@@ -630,6 +630,11 @@ acgraph.vector.svg.Renderer.prototype.setTextPosition = function(element) {
 };
 
 
+acgraph.vector.svg.Renderer.prototype.setTextData = function(element) {
+  element.domElement().innerHTML = element.text();
+};
+
+
 /** @inheritDoc */
 acgraph.vector.svg.Renderer.prototype.setTextProperties = function(element) {
   var style = element.style();
