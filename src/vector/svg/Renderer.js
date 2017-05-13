@@ -630,6 +630,10 @@ acgraph.vector.svg.Renderer.prototype.setTextPosition = function(element) {
 };
 
 
+/**
+ * Sets data for simple text.
+ * @param {acgraph.vector.SimpleText} element .
+ */
 acgraph.vector.svg.Renderer.prototype.setTextData = function(element) {
   element.domElement().innerHTML = element.text();
 };

@@ -107,6 +107,7 @@ acgraph.vector.SimpleText.prototype.renderInternal = function() {
 };
 
 
+/** @inheritDoc */
 acgraph.vector.SimpleText.prototype.renderTransformation = function() {
   this.clearDirtyState(acgraph.vector.Element.DirtyState.TRANSFORMATION);
   this.clearDirtyState(acgraph.vector.Element.DirtyState.PARENT_TRANSFORMATION);
